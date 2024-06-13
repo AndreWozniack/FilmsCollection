@@ -1,14 +1,6 @@
-//
-//  Film.swift
-//  FilmsColection
-//
-//  Created by André Wozniack on 13/06/24.
-//
-
 import Foundation
 
-
-class FilmData: Identifiable, Codable{
+class Film: Identifiable, Codable{
     var id = UUID()
     let idFilme: Int32
     let title: String
