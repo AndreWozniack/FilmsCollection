@@ -2,7 +2,6 @@ import SwiftUI
 
 struct FilmDetail: View {
     @State var conteudo: Film
-//    @ObservedObject private var dataManager = DataManager.shared
     
     var ratingAsStars: Int {
         return Int((Double(conteudo.rating) ) / 2.0 + 0.5)

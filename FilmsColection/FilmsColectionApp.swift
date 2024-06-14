@@ -12,14 +12,16 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 }
 
 
+
 @main
 struct FilmsColectionApp: App {
-
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
-    
+    @StateObject var authViewModel = AuthViewModel()
+
     var body: some Scene {
         WindowGroup {
-            AppleLoginView()
+            ContentView()
+                .environmentObject(authViewModel)
         }
     }
 }

@@ -9,26 +9,15 @@ class FilmDataManager {
 
     private init() {}
     
-    func findFilmes(query: String) async -> Film? {
-        let language = Locale.current.language.languageCode
-        var languageCode = ""
-        switch language {
-        case "en":
-            languageCode = "en-US"
-        case "pt":
-            languageCode = "pt-BR"
-        case .none:
-            languageCode = "en-US"
-        case .some(_):
-            languageCode = "en-US"
-        }
-        
+    func findFilms(query: String) async -> [Film] {
+        let languageCode = determineLanguageCode()
+
         let queryEncoded = query.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
         let searchURLString = "https://api.themoviedb.org/3/search/movie?query=\(queryEncoded)&include_adult=false&language=\(languageCode)&page=1"
         
         guard let searchURL = URL(string: searchURLString) else {
             print("Invalid URL")
-            return nil
+            return []
         }
         
         var searchRequest = URLRequest(url: searchURL, timeoutInterval: Double.infinity)
@@ -41,18 +30,31 @@ class FilmDataManager {
             let decoder = JSONDecoder()
             let searchResponse = try decoder.decode(SearchResponse.self, from: data)
             
-            guard let firstResultId = searchResponse.results.first?.id else {
-                print("No results found")
-                return nil
+            var films = [Film]()
+            for result in searchResponse.results {
+                if let film = await fetchFilmDetail(for: result.id, languageCode: languageCode) {
+                    films.append(film)
+                }
             }
-            
-            return await fetchFilmDetail(for: firstResultId, languageCode: languageCode)
+            return films
         } catch {
             print("Error during film search: \(error)")
-            return nil
+            return []
         }
     }
-    
+
+    private func determineLanguageCode() -> String {
+        guard let language = Locale.current.language.languageCode?.identifier else { return "en-US" }
+        switch language {
+        case "en":
+            return "en-US"
+        case "pt":
+            return "pt-BR"
+        default:
+            return "en-US"
+        }
+    }
+
     private func fetchFilmDetail(for id: Int32, languageCode: String) async -> Film? {
         let detailURLString = "https://api.themoviedb.org/3/movie/\(id)?language=\(languageCode)"
         
@@ -87,6 +89,7 @@ class FilmDataManager {
             return nil
         }
     }
+
 
     func saveFilm(_ film: Film, completion: @escaping (Bool) -> Void) {
         guard let userId = Auth.auth().currentUser?.uid else {
@@ -144,5 +147,24 @@ class FilmDataManager {
             }
         }
     }
+    
+    func deleteFilm(_ film: Film, completion: @escaping (Bool) -> Void) {
+        guard let userId = Auth.auth().currentUser?.uid else {
+            print("Usuário não está logado.")
+            completion(false)
+            return
+        }
+
+        db.collection("users").document(userId).collection("films").document("\(film.idFilme)").delete { error in
+            if let error = error {
+                print("Erro ao deletar filme no Firestore: \(error)")
+                completion(false)
+            } else {
+                completion(true)
+            }
+        }
+    }
+
+    
 }
 

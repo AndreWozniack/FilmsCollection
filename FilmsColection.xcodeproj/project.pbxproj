@@ -48,6 +48,11 @@
 		AF2DA07D2C1B6DAC00008234 /* FilmCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2DA07C2C1B6DAC00008234 /* FilmCard.swift */; };
 		AF2DA0822C1BAFE000008234 /* FilmCardList.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2DA0812C1BAFE000008234 /* FilmCardList.swift */; };
 		AF2DA0852C1BB21A00008234 /* AppleLoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2DA0842C1BB21A00008234 /* AppleLoginView.swift */; };
+		AF2DA0872C1BB5D400008234 /* SearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2DA0862C1BB5D400008234 /* SearchBar.swift */; };
+		AF2DA0892C1BB64300008234 /* FilmListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2DA0882C1BB64300008234 /* FilmListView.swift */; };
+		AF2DA08B2C1BBCA800008234 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2DA08A2C1BBCA800008234 /* ProfileView.swift */; };
+		AF2DA08D2C1BC3DB00008234 /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2DA08C2C1BC3DB00008234 /* AuthViewModel.swift */; };
+		AF2DA0902C1BC42200008234 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2DA08F2C1BC42200008234 /* MainView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -66,6 +71,11 @@
 		AF2DA0802C1B6F0200008234 /* FilmsColection.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FilmsColection.entitlements; sourceTree = "<group>"; };
 		AF2DA0812C1BAFE000008234 /* FilmCardList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilmCardList.swift; sourceTree = "<group>"; };
 		AF2DA0842C1BB21A00008234 /* AppleLoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleLoginView.swift; sourceTree = "<group>"; };
+		AF2DA0862C1BB5D400008234 /* SearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
+		AF2DA0882C1BB64300008234 /* FilmListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilmListView.swift; sourceTree = "<group>"; };
+		AF2DA08A2C1BBCA800008234 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		AF2DA08C2C1BC3DB00008234 /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
+		AF2DA08F2C1BC42200008234 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -150,9 +160,12 @@
 		AF2DA0242C1A41BB00008234 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				AF2DA08F2C1BC42200008234 /* MainView.swift */,
 				AF2DA02C2C1B628300008234 /* FilmsView */,
 				AF2DA0152C1A3D3700008234 /* ContentView.swift */,
 				AF2DA0842C1BB21A00008234 /* AppleLoginView.swift */,
+				AF2DA0862C1BB5D400008234 /* SearchBar.swift */,
+				AF2DA08A2C1BBCA800008234 /* ProfileView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -162,6 +175,7 @@
 			children = (
 				AF2DA02A2C1B606500008234 /* Film.swift */,
 				AF2DA0342C1B662800008234 /* SearchResponse.swift */,
+				AF2DA08C2C1BC3DB00008234 /* AuthViewModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -180,6 +194,7 @@
 				AF2DA02D2C1B629600008234 /* FilmDetail.swift */,
 				AF2DA07C2C1B6DAC00008234 /* FilmCard.swift */,
 				AF2DA0812C1BAFE000008234 /* FilmCardList.swift */,
+				AF2DA0882C1BB64300008234 /* FilmListView.swift */,
 			);
 			path = FilmsView;
 			sourceTree = "<group>";
@@ -288,6 +303,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AF2DA0892C1BB64300008234 /* FilmListView.swift in Sources */,
+				AF2DA08B2C1BBCA800008234 /* ProfileView.swift in Sources */,
 				AF2DA0352C1B662800008234 /* SearchResponse.swift in Sources */,
 				AF2DA0852C1BB21A00008234 /* AppleLoginView.swift in Sources */,
 				AF2DA0162C1A3D3700008234 /* ContentView.swift in Sources */,
@@ -295,9 +312,12 @@
 				AF2DA07D2C1B6DAC00008234 /* FilmCard.swift in Sources */,
 				AF2DA0822C1BAFE000008234 /* FilmCardList.swift in Sources */,
 				AF2DA02B2C1B606500008234 /* Film.swift in Sources */,
+				AF2DA08D2C1BC3DB00008234 /* AuthViewModel.swift in Sources */,
 				AF2DA0302C1B651500008234 /* FilmDataManager.swift in Sources */,
 				AF2DA02E2C1B629600008234 /* FilmDetail.swift in Sources */,
 				AF2DA0142C1A3D3700008234 /* FilmsColectionApp.swift in Sources */,
+				AF2DA0902C1BC42200008234 /* MainView.swift in Sources */,
+				AF2DA0872C1BB5D400008234 /* SearchBar.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -15,6 +15,7 @@ struct AppleLoginView: View {
         VStack {
             if isAuthenticated {
                 ContentView()
+                
             } else {
                 SignInWithAppleButton(
                     .signIn,
