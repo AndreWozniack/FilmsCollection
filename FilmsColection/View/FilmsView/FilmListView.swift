@@ -13,7 +13,7 @@ struct FilmListView: View {
 
     var body: some View {
         NavigationView {
-            VStack {
+            VStack(spacing: 6) {
                 SearchBar(text: $searchText, onSearch: loadFilms)
                 if isLoading {
                     Spacer()
@@ -35,9 +35,11 @@ struct FilmListView: View {
                             .tint(.yellow)
                         }
                     }
+                    
                 }
             }
             .navigationTitle("Search Movies")
+            .background(Color.clear)
         }
         .onAppear {
             if searchText.isEmpty {
@@ -45,9 +47,6 @@ struct FilmListView: View {
             }
         }
     }
-    
-
-
     
     func loadFilms(query: String) {
         if query.isEmpty {
@@ -82,3 +81,6 @@ struct FilmListView: View {
     }
 }
 
+#Preview {
+    FilmListView()
+}

@@ -6,12 +6,12 @@ import Network
 class FilmDataManager {
     static let shared = FilmDataManager()
     private let db = Firestore.firestore()
-
+    
     private init() {}
     
     func findFilms(query: String) async -> [Film] {
         let languageCode = determineLanguageCode()
-
+        
         let queryEncoded = query.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
         let searchURLString = "https://api.themoviedb.org/3/search/movie?query=\(queryEncoded)&include_adult=false&language=\(languageCode)&page=1"
         
@@ -43,27 +43,34 @@ class FilmDataManager {
         }
     }
     func fetchPopularFilms(page: Int = 1) async -> [Film] {
-            var components = URLComponents(string: "https://api.themoviedb.org/3/movie/popular")!
-            components.queryItems = [
-                URLQueryItem(name: "language", value: "en-US"),
-                URLQueryItem(name: "page", value: "\(page)")
-            ]
+        var components = URLComponents(string: "https://api.themoviedb.org/3/movie/popular")!
+        components.queryItems = [
+            URLQueryItem(name: "language", value: "en-US"),
+            URLQueryItem(name: "page", value: "\(page)")
+        ]
+        
+        var request = URLRequest(url: components.url!)
+        request.httpMethod = "GET"
+        request.timeoutInterval = 10
+        request.addValue("Bearer \(Secrets.TMDB_API_KEY)", forHTTPHeaderField: "Authorization")
+        
+        do {
+            let (data, _) = try await URLSession.shared.data(for: request)
+            let decoder = JSONDecoder()
+            let searchResponse = try decoder.decode(SearchResponse.self, from: data)
             
-            var request = URLRequest(url: components.url!)
-            request.httpMethod = "GET"
-            request.timeoutInterval = 10
-        request.addValue(Secrets.TMDB_API_KEY, forHTTPHeaderField: "Authorization")
-            
-            do {
-                let (data, _) = try await URLSession.shared.data(for: request)
-                let decoder = JSONDecoder()
-                let response = try decoder.decode(PopularFilmsResponse.self, from: data)
-                return response.results.map { $0.toFilm() }
-            } catch {
-                print("Error fetching popular films: \(error)")
-                return []
+            var films = [Film]()
+            for result in searchResponse.results {
+                if let film = await fetchFilmDetail(for: result.id, languageCode: "en-US") {
+                    films.append(film)
+                }
             }
+            return films
+        } catch {
+            print("Error during film search: \(error)")
+            return []
         }
+    }
     private func determineLanguageCode() -> String {
         guard let language = Locale.current.language.languageCode?.identifier else { return "en-US" }
         switch language {
@@ -108,8 +115,8 @@ class FilmDataManager {
             return nil
         }
     }
-
-
+    
+    
     func saveFilm(_ film: Film, completion: @escaping (Bool) -> Void) {
         guard let userId = Auth.auth().currentUser?.uid else {
             print("Usuário não está logado.")
@@ -139,8 +146,8 @@ class FilmDataManager {
             }
         }
     }
-
-
+    
+    
     func loadFilms(from userId: String, completion: @escaping ([Film]?, Error?) -> Void) {
         db.collection("users").document(userId).collection("films").getDocuments { snapshot, error in
             if let error = error {
@@ -174,7 +181,7 @@ class FilmDataManager {
             completion(false)
             return
         }
-
+        
         db.collection("users").document(userId).collection("films").document("\(film.idFilme)").delete { error in
             if let error = error {
                 print("Erro ao deletar filme no Firestore: \(error)")
@@ -184,7 +191,7 @@ class FilmDataManager {
             }
         }
     }
-
+    
     
 }
 
