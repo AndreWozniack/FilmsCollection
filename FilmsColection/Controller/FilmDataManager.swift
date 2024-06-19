@@ -42,7 +42,28 @@ class FilmDataManager {
             return []
         }
     }
-
+    func fetchPopularFilms(page: Int = 1) async -> [Film] {
+            var components = URLComponents(string: "https://api.themoviedb.org/3/movie/popular")!
+            components.queryItems = [
+                URLQueryItem(name: "language", value: "en-US"),
+                URLQueryItem(name: "page", value: "\(page)")
+            ]
+            
+            var request = URLRequest(url: components.url!)
+            request.httpMethod = "GET"
+            request.timeoutInterval = 10
+        request.addValue(Secrets.TMDB_API_KEY, forHTTPHeaderField: "Authorization")
+            
+            do {
+                let (data, _) = try await URLSession.shared.data(for: request)
+                let decoder = JSONDecoder()
+                let response = try decoder.decode(PopularFilmsResponse.self, from: data)
+                return response.results.map { $0.toFilm() }
+            } catch {
+                print("Error fetching popular films: \(error)")
+                return []
+            }
+        }
     private func determineLanguageCode() -> String {
         guard let language = Locale.current.language.languageCode?.identifier else { return "en-US" }
         switch language {
@@ -54,7 +75,6 @@ class FilmDataManager {
             return "en-US"
         }
     }
-
     private func fetchFilmDetail(for id: Int32, languageCode: String) async -> Film? {
         let detailURLString = "https://api.themoviedb.org/3/movie/\(id)?language=\(languageCode)"
         
@@ -80,9 +100,8 @@ class FilmDataManager {
                 originalTitle: filmDetail.originalTitle,
                 duration: filmDetail.duration,
                 plot: filmDetail.plot,
-                rating: filmDetail.rating,
-                favorite: false,
-                watched: false
+                rating: filmDetail.rating
+                
             )
         } catch {
             print("Error fetching film detail: \(error)")
@@ -107,8 +126,8 @@ class FilmDataManager {
             "duration": film.duration,
             "plot": film.plot,
             "rating": film.rating,
-            "favorite": film.favorite,
-            "watched": film.watched
+            "userRating": film.userRating ?? 0,
+            "notes": film.notes ?? ""
         ]
         
         db.collection("users").document(userId).collection("films").document("\(film.idFilme)").setData(filmDict) { error in
@@ -120,6 +139,7 @@ class FilmDataManager {
             }
         }
     }
+
 
     func loadFilms(from userId: String, completion: @escaping ([Film]?, Error?) -> Void) {
         db.collection("users").document(userId).collection("films").getDocuments { snapshot, error in
@@ -138,8 +158,8 @@ class FilmDataManager {
                         duration: data["duration"] as? Int ?? 0,
                         plot: data["plot"] as? String ?? "",
                         rating: data["rating"] as? Double ?? 0.0,
-                        favorite: data["favorite"] as? Bool ?? false,
-                        watched: data["watched"] as? Bool ?? false
+                        userRating: data["userRating"] as? Double ?? 0,
+                        notes: data["notes"] as? String ?? ""
                     )
                     films.append(film)
                 }

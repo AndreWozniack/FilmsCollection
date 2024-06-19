@@ -15,13 +15,13 @@ struct ProfileView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                Image("perfil")
+                Image("Profile")
                     .resizable()
                     .scaledToFit()
                     .frame(width: 94)
                     .padding(.top, 20)
                 
-                Text("Meu Perfil")
+                Text("My Profile")
                     .font(.system(size: 20))
                     .fontWeight(.bold)
                     .padding(.bottom, 5)
@@ -33,6 +33,7 @@ struct ProfileView: View {
                     Spacer()
                 } else {
                     List(films, id: \.id) { film in
+                        
                         NavigationLink(destination: FilmDetail(conteudo: film)) {
                             FilmCardList(title: film.title, releaseDate: film.releaseDate, imageUrl: film.image)
                                 .contextMenu {

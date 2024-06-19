@@ -2,6 +2,16 @@ import SwiftUI
 
 struct FilmDetail: View {
     @State var conteudo: Film
+    @State private var userRating: Double
+    @State private var notes: String
+    @State private var isEditingEnabled: Bool = false
+    
+    init(conteudo: Film) {
+        self.conteudo = conteudo
+        print(conteudo.description)
+        _userRating = State(initialValue: conteudo.userRating ?? 0)
+        _notes = State(initialValue: conteudo.notes ?? "")
+    }
     
     var ratingAsStars: Int {
         return Int((Double(conteudo.rating) ) / 2.0 + 0.5)
@@ -35,21 +45,10 @@ struct FilmDetail: View {
                                 .padding(.top)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             HStack {
-                                ForEach(0..<ratingAsStars, id: \.self) { _ in
-                                    Text(.init(systemName: "star.fill"))
-                                        .foregroundColor(.orange)
-                                        .font(.system(size: 14))
-                                }
-                                ForEach(0..<(5-ratingAsStars), id: \.self) { _ in
-                                    Text(.init(systemName: "star"))
-                                        .foregroundColor(.orange)
-                                        .font(.system(size: 14))
-                                }
+                                StarRatingView(rating: conteudo.rating)
+                                
                             }
                         }
-
-
-                        
                     }
                     .padding(.horizontal, 30)
                     HStack(spacing: 10){
@@ -95,21 +94,68 @@ struct FilmDetail: View {
                         .font(.system(size: 16))
                         .padding(.horizontal, 30)
                     
-                    
+                    VStack(spacing: 10) {
+                        HStack {
+                            Text("Your Notes")
+                                .font(.system(size: 20))
+                                .foregroundColor(.white)
+                                .fontWeight(.semibold)
+                            
+                            Spacer()
+                            Button(isEditingEnabled ? "Save" : "Edit") {
+                                if isEditingEnabled {
+                                    conteudo.userRating = userRating
+                                    conteudo.notes = notes
+                                    FilmDataManager.shared.saveFilm(conteudo) { success in
+                                        print(success ? "Film updated successfully" : "Failed to update film")
+                                    }
+                                }
+                                isEditingEnabled.toggle()
+                            }
+                            .foregroundColor(.blue)
+                        }
+                        
+                        if isEditingEnabled {
+                            HStack {
+                                StarRatingEditingView(rating: $userRating, isEditable: true)
+                                Text("\(userRating, specifier: "%.1f")")
+                                    .foregroundStyle(Color.gray)
+                                Spacer()
+                            }
+                            TextEditor(text: $notes)
+                                .frame(minHeight: 100)
+                                .padding(.horizontal)
+                                .overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 1))
+                        } else {
+                            HStack {
+                                StarRatingView(rating: userRating)
+                                Spacer()
+                            }
+                            Text(notes)
+                                .frame(minHeight: 100)
+                                .padding(.horizontal)
+                        }
+                    }
+                    .padding(.horizontal, 30)
                     Spacer()
-                }.background(Rectangle()
-                    .foregroundColor(.black)
-                    .cornerRadius(28))
+                }
+                .background(Rectangle().foregroundColor(.black).cornerRadius(28))
             }
         }
-        .edgesIgnoringSafeArea([.top])
-        .background(.black)
+        .background(Color.black)
+        .edgesIgnoringSafeArea(.top)
+        .onTapGesture {
+            hideKeyboard()
+        }
+    }
+    
+    private func hideKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }
 
 
-struct FilmDetail_Previews: PreviewProvider {
-    static var previews: some View {
-        FilmDetail(conteudo: Film(idFilme: 19995, title: "Avatar", image: "/iNMP8uzV2Ing6ZCw0IICgEFVNfC.jpg", releaseDate: "2009-12-15", originalTitle: nil, duration: 162, plot: "Apesar de confinado a uma cadeira de rodas, Jake Sully, um ex-marine, continua a ser um combatente. Assim, é recrutado para uma missão a Pandora, um corpo celeste que orbita um enorme planeta gasoso, para explorar um mineral alternativo chamado Unobtainium, usado na Terra como recurso energético. Porém, devido ao facto de a atmosfera de Pandora ser altamente tóxica para os humanos, é usado um programa de avatares híbridos, que possibilita a transferência da mente de qualquer humano para um corpo nativo.", rating: 7.571, favorite: false, watched: false))
-    }
+#Preview {
+    FilmDetail(conteudo: Film(idFilme: 19995, title: "Avatar", image: "/iNMP8uzV2Ing6ZCw0IICgEFVNfC.jpg", releaseDate: "2009-12-15", originalTitle: nil, duration: 162, plot: "Apesar de confinado a uma cadeira de rodas, Jake Sully, um ex-marine, continua a ser um combatente. Assim, é recrutado para uma missão a Pandora, um corpo celeste que orbita um enorme planeta gasoso, para explorar um mineral alternativo chamado Unobtainium, usado na Terra como recurso energético. Porém, devido ao facto de a atmosfera de Pandora ser altamente tóxica para os humanos, é usado um programa de avatares híbridos, que possibilita a transferência da mente de qualquer humano para um corpo nativo.", rating: 7.571, userRating: 5.5))
 }
+

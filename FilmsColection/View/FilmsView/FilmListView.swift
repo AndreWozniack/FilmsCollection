@@ -7,12 +7,10 @@ struct FilmListView: View {
     @State private var isLoading = false
     @State private var searchTask: Task<Void, Never>? = nil
     @State private var showingAddToList = false
-    @State private var filmLists: [String] = []  // Lista dos nomes das listas para simplificação
+    @State private var filmLists: [String] = []
     @State private var selectedList: String? = nil
     @State private var newListName: String = ""
 
-
-    
     var body: some View {
         NavigationView {
             VStack {
@@ -41,21 +39,35 @@ struct FilmListView: View {
             }
             .navigationTitle("Search Movies")
         }
+        .onAppear {
+            if searchText.isEmpty {
+                loadPopularFilms()
+            }
+        }
     }
     
 
 
     
     func loadFilms(query: String) {
+        if query.isEmpty {
+            loadPopularFilms()
+            return
+        }
         isLoading = true
-        
         searchTask?.cancel()
-        
         searchTask = Task {
-            do {
-                self.films = await FilmDataManager.shared.findFilms(query: query)
-                isLoading = false
-            }
+            self.films = await FilmDataManager.shared.findFilms(query: query)
+            isLoading = false
+        }
+    }
+    
+    func loadPopularFilms() {
+        isLoading = true
+        searchTask?.cancel()
+        searchTask = Task {
+            self.films = await FilmDataManager.shared.fetchPopularFilms()
+            isLoading = false
         }
     }
     

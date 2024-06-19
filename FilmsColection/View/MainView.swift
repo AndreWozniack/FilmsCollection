@@ -8,13 +8,13 @@ struct MainView: View {
 
             FilmListView()
                 .tabItem {
-                    Label("Recomendações", systemImage: "magnifyingglass.circle.fill")
+                    Label("Search", systemImage: "magnifyingglass.circle.fill")
                 }
                 .tag(1)
             
             ProfileView()
                 .tabItem {
-                    Label("Perfil", systemImage: "person.circle.fill")
+                    Label("Profile", systemImage: "person.circle.fill")
                 }
                 .tag(2)
         }
